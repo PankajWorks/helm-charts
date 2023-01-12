@@ -1,0 +1,29 @@
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: AzureManagedControlPlane
+metadata:
+  name: {{ .Values.cluster.name }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  identityRef:
+    apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+    kind: AzureClusterIdentity
+    name: {{ $.Values.identity.clusterIdentityName }}
+  location: {{ .Values.cluster.location }}
+  resourceGroupName: {{ .Values.cluster.resourceGroupName }}
+  nodeResourceGroupName: {{ .Values.cluster.nodeResourceGroupName }}
+  sshPublicKey: {{ .Values.controlplane.sshPublicKey | b64enc }}
+  subscriptionID: {{ .Values.subscriptionID }}
+  version: {{ .Values.controlplane.kubernetes_version }}
+  networkPolicy: {{ .Values.controlplane.networkPolicy }}
+  networkPlugin: {{ .Values.controlplane.networkPlugin }}
+  virtualNetwork:
+    cidrBlock: {{ .Values.controlplane.vnetcidr }}
+    name: {{ .Values.controlplane.vnetname }}
+    resourceGroup: {{ .Values.controlplane.vnetrg }}
+    subnet:
+      cidrBlock: {{ .Values.controlplane.subnetcidr }}
+      name: {{ .Values.controlplane.subnetname }}
+  aadProfile:
+    managed: true
+    adminGroupObjectIDs:
+      {{- toYaml .Values.aad.adminGroupObjectIDs | nindent 4 }}
